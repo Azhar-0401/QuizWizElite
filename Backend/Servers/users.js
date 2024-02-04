@@ -3,7 +3,7 @@ const mongoose=require('mongoose');
 const jwt = require('jsonwebtoken');
 const {SECRET}=require('../Middleware/auth');
 const {authfunction}=require('../Middleware/auth');
-const {User,Admin,Course}=require('../db/index')
+const {User,Admin,quiz}=require('../db/index')
 const router=express.Router();
 
 router.post('/signup', async(req,res)=>{
@@ -30,31 +30,31 @@ router.post('/login',async(req,res)=>{
         res.status(403).json({Message:"Invalid Detailed Entered...!!"});
     }
 })
-router.get('/courses',authfunction,async(req,res)=>{
-    const courses= await Course.find({published:true});
-    res.json({courses});
+router.get('/quizez',authfunction,async(req,res)=>{
+    const quizez= await quiz.find({published:true});
+    res.json({quizez});
 })
-router.post('/courses/:courseid',authfunction,async(req,res)=>{
-    const course= await Course.findById(req.params.courseid);
-    console.log(course);
-    if(course){
+router.post('/quizez/:quizid',authfunction,async(req,res)=>{
+    const quiz= await quiz.findById(req.params.quizid);
+    console.log(quiz);
+    if(quiz){
         const user= await User.findOne({username:req.body.username});
         if(user){
-            user.parchesedcourse.push(course);
+            user.parchesedquiz.push(quiz);
             await user.save();
-            res.json({Message:"Course Parched Successfully"});
+            res.json({Message:"quiz Parched Successfully"});
         }else{
             res.status(403).json({Message:"User Not found"}); 
         }
     }
     else{
-            res.status(404).json({Message:"Course Not found"});
+            res.status(404).json({Message:"quiz Not found"});
     }
 })
-router.get('/parchesedcourse',authfunction,async(req,res)=>{
-    const user=await User.findOne({username:req.user.username}).populate('parchesedcourse');
+router.get('/parchesedquiz',authfunction,async(req,res)=>{
+    const user=await User.findOne({username:req.user.username}).populate('parchesedquiz');
     if(user){
-        res.json({parchesedcourse:user.parchesedcourse || []});
+        res.json({parchesedquiz:user.parchesedquiz || []});
     }
     else{
         res.status(403).json({Message:"User Not Found....!!"});
